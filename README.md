@@ -1,2 +1,2 @@
 # AzurePowerShell
-Azure CLoud Related Powershell script
+Azure Cloud Related Powershell script
