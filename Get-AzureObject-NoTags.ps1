@@ -13,20 +13,11 @@ $AZSubscriptions = Get-AzSubscription
 ForEach ($AZSubscription in $AZSubscriptions) {
     Write-Host "Selecting Azure Subscription [$($AZSubscription.Name)] - $($AZSubscription.Id)" -ForegroundColor Yellow
     Select-AzSubscription -SubscriptionId $AZSubscription.Id
-    $resources = Get-AzResource
 
-    & {
-        foreach ($resource in $resources) {
-            if ($null -eq $resource.Tags) {
-                [PSCustomObject]@{
-                    Name              = $resource.Name
-                    ResourceType      = $resource.ResourceType
-                    ResourceGroupname = $resource.ResourceGroupName
-                    ResourceLocation  = $resource.Location
-                }
-            }
-        }
-    } | Out-GridView -Title "Azure objects with no tags under [$((Get-AzContext).Subscription.Name) - $((Get-AzContext).Subscription.Id)] as at $((Get-Date).ToString('dddd dd/MM/yyyy HH:mm tt [UTC K]'))"
+    Get-AzResource | 
+        Where-Object {$null -eq $_.Tags} | 
+        Select-Object -Property Name, ResourceType, ResourceGroupName, Location | 
+        Out-GridView -Title "Azure objects with no tags under [$((Get-AzContext).Subscription.Name) - $((Get-AzContext).Subscription.Id)] as at $((Get-Date).ToString('dddd dd/MM/yyyy HH:mm tt [UTC K]'))"
 }
 
 #End Time
